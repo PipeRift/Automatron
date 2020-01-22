@@ -1,4 +1,4 @@
-# Automatron
+# <img src="Resources/Icon128.png" height=40px /> Automatron
 Plugin that provides improved automated tests for C++ and Blueprints
 
 ## Documentation
