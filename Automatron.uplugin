@@ -1,0 +1,28 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Automatron",
+	"Description": "Plugin that provides improved automated tests for C++ and Blueprints",
+	"Category": "Other",
+	"CreatedBy": "Miguel Fernandez",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Automatron",
+			"Type": "Developer",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "AutomatronTest",
+			"Type": "Developer",
+			"LoadingPhase": "PreDefault"
+		}
+	]
+}
