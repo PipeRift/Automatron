@@ -11,6 +11,8 @@
 
 DECLARE_DELEGATE_OneParam(FSpecBaseOnWorldReady, UWorld*);
 
+// Initializes an spec instance at global execution time
+// and registers it to the system
 template<typename T>
 struct TSpecRegister
 {
@@ -28,6 +30,24 @@ template<typename T>
 TSpecRegister<T> TSpecRegister<T>::Register{};
 
 
+struct AUTOMATRON_API FTestContext
+{
+private:
+
+	int32 Id = 0;
+
+public:
+	FTestContext(int32 Id = 0) : Id(Id) {}
+
+	FTestContext NextContext() const { return {Id + 1}; }
+	bool IsFirstTest() const { return Id == 1; }
+
+	friend uint32 GetTypeHash(const FTestContext& Item) { return Item.Id; }
+	bool operator==(const FTestContext& Other) const { return Id == Other.Id; }
+	operator bool() const { return Id > 0; }
+};
+
+
 class AUTOMATRON_API FSpecBase : public FAutomationSpecBase
 {
 public:
@@ -38,6 +58,7 @@ public:
 
 private:
 
+	FString ClassName;
 	FString PrettyName;
 	FString FileName;
 	int32 LineNumber = -1;
@@ -52,6 +73,9 @@ private:
 
 	TWeakObjectPtr<UWorld> World;
 
+	// The context of the active test
+	FTestContext CurrentContext;
+
 
 public:
 
@@ -63,6 +87,10 @@ public:
 	virtual FString GetTestSourceFileName() const override { return FileName; }
 	virtual int32 GetTestSourceFileLine() const override { return LineNumber; }
 	virtual uint32 GetTestFlags() const override { return Flags; }
+
+	const FString& GetClassName() const { return ClassName; }
+	const FString& GetPrettyName() const { return PrettyName; }
+	FTestContext GetCurrentContext() const { return CurrentContext; }
 
 protected:
 
@@ -112,6 +140,7 @@ inline void FSpecBase::Setup(FString&& InName, FString&& InPrettyName, FString&&
 		((TFlags & EAutomationTestFlags::FilterMask) == EAutomationTestFlags::NegativeFilter),
 		"All AutomationTests must have exactly 1 filter type specified.  See AutomationTest.h.");
 
+	ClassName = InName;
 	PrettyName = MoveTemp(InPrettyName);
 	FileName = MoveTemp(InFileName);
 	LineNumber = InLineNumber;

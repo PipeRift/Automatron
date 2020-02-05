@@ -66,6 +66,16 @@ bool FSpecBase::RunTest(const FString& InParameters)
 
 void FSpecBase::PreDefine()
 {
+	BeforeEach([this]()
+	{
+		CurrentContext = CurrentContext.NextContext();
+	});
+
+	if (!bUseWorld)
+	{
+		return;
+	}
+
 	LatentBeforeEach(EAsyncExecution::ThreadPool, [this](const auto & Done)
 	{
 		PrepareTestWorld(FSpecBaseOnWorldReady::CreateLambda([this, &Done](UWorld * InWorld)
@@ -78,27 +88,31 @@ void FSpecBase::PreDefine()
 
 void FSpecBase::PostDefine()
 {
-	if (!bUsePIEWorld)
-	{
-		return;
-	}
-
 	AfterEach([this]()
 	{
-		ReleaseTestWorld();
-
 		--TestsRemaining;
 
-#if WITH_EDITOR
-		// If this spec initialized a PIE world, tear it down
-		if (bInitializedPIE && (TestsRemaining <= 0 || !bReusePIEWorldForAllTests))
+		if (!bUsePIEWorld)
 		{
-			FEditorPromotionTestUtilities::EndPIE();
-			bInitializedPIE = false;
+			return;
 		}
-#endif
-	});
 
+		// If this spec initialized a PIE world, tear it down
+		if (TestsRemaining <= 0 || !bReusePIEWorldForAllTests)
+		{
+#if WITH_EDITOR
+			if (bInitializedPIE)
+			{
+				FEditorPromotionTestUtilities::EndPIE();
+				bInitializedPIE = false;
+			}
+			else
+#endif
+			{
+				ReleaseTestWorld();
+			}
+		}
+	});
 }
 
 void FSpecBase::PrepareTestWorld(FSpecBaseOnWorldReady OnWorldReady)
