@@ -16,12 +16,12 @@
 	"Modules": [
 		{
 			"Name": "Automatron",
-			"Type": "Developer",
+			"Type": "DeveloperTool",
 			"LoadingPhase": "PreDefault"
 		},
 		{
 			"Name": "AutomatronTest",
-			"Type": "Developer",
+			"Type": "DeveloperTool",
 			"LoadingPhase": "PreDefault"
 		}
 	]
