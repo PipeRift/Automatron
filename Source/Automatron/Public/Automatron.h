@@ -4,9 +4,9 @@
 
 #include <CoreMinimal.h>
 #include <Engine/Engine.h>
-#include <AutomationTest.h>
-#include <AutomationCommon.h>
-#include <UnrealTypeTraits.h>
+#include <Misc/AutomationTest.h>
+#include <Tests/AutomationCommon.h>
+#include <Templates/UnrealTypeTraits.h>
 
 #include "SpecBase.h"
 

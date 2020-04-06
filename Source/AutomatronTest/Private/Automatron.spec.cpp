@@ -1,7 +1,7 @@
 // Copyright 2020 Splash Damage, Ltd. - All Rights Reserved.
 
 #include <CoreMinimal.h>
-#include <AutomationTest.h>
+#include <Misc/AutomationTest.h>
 
 #include "Automatron.h"
 

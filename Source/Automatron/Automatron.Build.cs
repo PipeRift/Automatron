@@ -8,8 +8,9 @@ public class Automatron : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		bEnforceIWYU = true;
+        bLegacyPublicIncludePaths = false;
 
-		PublicDependencyModuleNames.AddRange(new string[]
+        PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core",
 			"CoreUObject",
