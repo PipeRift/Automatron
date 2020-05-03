@@ -4,12 +4,12 @@
 
 #include <CoreMinimal.h>
 #include <Modules/ModuleManager.h>
-#include "SpecBase.h"
+#include "TestSpec.h"
 
 
 class FAutomatronModule : public IModuleInterface
 {
-	static TArray<TSharedRef<FSpecBase>> SpecInstances;
+	static TArray<TSharedRef<FTestSpec>> SpecInstances;
 
 public:
 

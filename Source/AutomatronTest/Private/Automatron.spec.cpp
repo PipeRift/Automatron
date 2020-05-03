@@ -8,7 +8,7 @@
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-SPEC(FAutomatronSpec, FSpecBase, "Automatron",
+SPEC(FAutomatronSpec, FTestSpec, "Automatron",
 	EAutomationTestFlags::EngineFilter |
 	EAutomationTestFlags::HighPriority |
 	EAutomationTestFlags::EditorContext)

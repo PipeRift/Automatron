@@ -14,7 +14,8 @@ public class Automatron : ModuleRules
 		{
 			"Core",
 			"CoreUObject",
-			"Engine"
+			"Engine",
+			"FunctionalTesting"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

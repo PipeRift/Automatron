@@ -1,6 +1,6 @@
 // Copyright 2020 Splash Damage, Ltd. - All Rights Reserved.
 
-#include "SpecBase.h"
+#include "TestSpec.h"
 
 #if WITH_EDITOR
 #include <Tests/AutomationEditorPromotionCommon.h>
@@ -8,63 +8,7 @@
 #endif
 
 
-// In order to know how many tests we have defined, we need to access private members of FAutomationSpecBase!
-// Thats why we replicate its layout as public for reinterpreting later.
-// This is a HACK and should be removed when UE4 API updates.
-struct FAutomationSpecBaseLayoutMock : public FAutomationTestBase
-	, public TSharedFromThis<FAutomationSpecBase>
-{
-	struct FSpecIt
-	{
-		FString Description;
-		FString Id;
-		FString Filename;
-		int32 LineNumber;
-		TSharedRef<IAutomationLatentCommand> Command;
-	};
-
-	struct FSpecDefinitionScope
-	{
-		FString Description;
-
-		TArray<TSharedRef<IAutomationLatentCommand>> BeforeEach;
-		TArray<TSharedRef<FSpecIt>> It;
-		TArray<TSharedRef<IAutomationLatentCommand>> AfterEach;
-
-		TArray<TSharedRef<FSpecDefinitionScope>> Children;
-	};
-
-	struct FSpec
-	{
-		FString Id;
-		FString Description;
-		FString Filename;
-		int32 LineNumber;
-		TArray<TSharedRef<IAutomationLatentCommand>> Commands;
-	};
-
-	FTimespan DefaultTimeout;
-	bool bEnableSkipIfError;
-	TArray<FString> Description;
-	TMap<FString, TSharedRef<FSpec>> IdToSpecMap;
-	TSharedPtr<FSpecDefinitionScope> RootDefinitionScope;
-	TArray<TSharedRef<FSpecDefinitionScope>> DefinitionScopeStack;
-	bool bHasBeenDefined;
-};
-static_assert(sizeof(FAutomationSpecBase) == sizeof(FAutomationSpecBaseLayoutMock), "Layout mock has different size than the original. Maybe FAutomationSpecBase changed?");
-
-
-bool FSpecBase::RunTest(const FString& InParameters)
-{
-	const bool bResult = FAutomationSpecBase::RunTest(InParameters);
-
-	auto* ExposedThis = reinterpret_cast<FAutomationSpecBaseLayoutMock*>(this);
-	TestsRemaining = ExposedThis->IdToSpecMap.Num();
-
-	return bResult;
-}
-
-void FSpecBase::PreDefine()
+void FTestSpec::PreDefine()
 {
 	BeforeEach([this]()
 	{
@@ -86,19 +30,17 @@ void FSpecBase::PreDefine()
 	});
 }
 
-void FSpecBase::PostDefine()
+void FTestSpec::PostDefine()
 {
 	AfterEach([this]()
 	{
-		--TestsRemaining;
-
 		if (!bUsePIEWorld)
 		{
 			return;
 		}
 
 		// If this spec initialized a PIE world, tear it down
-		if (TestsRemaining <= 0 || !bReusePIEWorldForAllTests)
+		if (GetTestsRemaining() <= 0 || !bReusePIEWorldForAllTests)
 		{
 #if WITH_EDITOR
 			if (bInitializedPIE)
@@ -115,7 +57,7 @@ void FSpecBase::PostDefine()
 	});
 }
 
-void FSpecBase::PrepareTestWorld(FSpecBaseOnWorldReady OnWorldReady)
+void FTestSpec::PrepareTestWorld(FSpecBaseOnWorldReady OnWorldReady)
 {
 	checkf(!IsInGameThread(), TEXT("PrepareTestWorld can only be done asynchronously. (LatentBeforeEach with ThreadPool or TaskGraph)"));
 
@@ -162,7 +104,7 @@ void FSpecBase::PrepareTestWorld(FSpecBaseOnWorldReady OnWorldReady)
 	OnWorldReady.ExecuteIfBound(SelectedWorld);
 }
 
-void FSpecBase::ReleaseTestWorld()
+void FTestSpec::ReleaseTestWorld()
 {
 #if WITH_EDITOR
 	if (!IsInGameThread())
@@ -181,7 +123,7 @@ void FSpecBase::ReleaseTestWorld()
 #endif
 }
 
-UWorld* FSpecBase::FindGameWorld()
+UWorld* FTestSpec::FindGameWorld()
 {
 	const TIndirectArray<FWorldContext>& WorldContexts = GEngine->GetWorldContexts();
 	for (const FWorldContext& Context : WorldContexts)

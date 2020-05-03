@@ -8,6 +8,8 @@
 #include <Tests/AutomationCommon.h>
 #include <Templates/UnrealTypeTraits.h>
 
+#include "Base/TestSpecBase.h"
+
 
 DECLARE_DELEGATE_OneParam(FSpecBaseOnWorldReady, UWorld*);
 
@@ -48,7 +50,7 @@ public:
 };
 
 
-class AUTOMATRON_API FSpecBase : public FAutomationSpecBase
+class AUTOMATRON_API FTestSpec : public FTestSpecBase
 {
 public:
 
@@ -63,7 +65,6 @@ private:
 	FString FileName;
 	int32 LineNumber = -1;
 	uint32 Flags = 0;
-	int32 TestsRemaining = 0;
 
 #if WITH_EDITOR
 	bool bInitializedPIE = false;
@@ -79,10 +80,7 @@ private:
 
 public:
 
-	FSpecBase() : FAutomationSpecBase("", false) {}
-	virtual ~FSpecBase() {}
-
-	virtual bool RunTest(const FString& InParameters) override;
+	FTestSpec() : FTestSpecBase("", false) {}
 
 	virtual FString GetTestSourceFileName() const override { return FileName; }
 	virtual int32 GetTestSourceFileLine() const override { return LineNumber; }
@@ -129,7 +127,7 @@ private:
 
 
 template<uint32 TFlags>
-inline void FSpecBase::Setup(FString&& InName, FString&& InPrettyName, FString&& InFileName, int32 InLineNumber)
+inline void FTestSpec::Setup(FString&& InName, FString&& InPrettyName, FString&& InFileName, int32 InLineNumber)
 {
 	static_assert(TFlags & EAutomationTestFlags::ApplicationContextMask, "AutomationTest has no application flag. It shouldn't run. See AutomationTest.h."); \
 	static_assert(((TFlags & EAutomationTestFlags::FilterMask) == EAutomationTestFlags::SmokeFilter) ||

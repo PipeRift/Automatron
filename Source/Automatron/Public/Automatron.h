@@ -8,7 +8,7 @@
 #include <Tests/AutomationCommon.h>
 #include <Templates/UnrealTypeTraits.h>
 
-#include "SpecBase.h"
+#include "TestSpec.h"
 
 
 #define GENERATE_SPEC(TClass, PrettyName, TFlags) \
@@ -18,7 +18,7 @@
 private: \
 	void Setup() \
 	{ \
-		FSpecBase::Setup<TFlags>(TEXT(#TClass), TEXT(PrettyName), FileName, LineNumber); \
+		FTestSpec::Setup<TFlags>(TEXT(#TClass), TEXT(PrettyName), FileName, LineNumber); \
 	} \
     static TSpecRegister<TClass>& __meta_register() \
 	{ \
